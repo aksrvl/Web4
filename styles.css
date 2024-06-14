@@ -5,25 +5,28 @@ body {
     box-sizing: border-box;
 }
 
-/* Шапка сайту */
 header {
     background-color: #212121;
     opacity: 0.9;
-    color: #bdbdbdbb;
+    color: #bdbdbd;
     display: flex;
     justify-content: space-between;
     align-items: center;
-    height: 80px;
+    height: 100px;
     position: sticky;
     top: 0;
-    /*todo*/
-    width: auto;
+    width: 100%;
     z-index: 1000;
 }
-
+footer {
+    position: sticky;
+    width: 100%;
+    z-index: 1000;
+}
 .header-left {
     display: flex;
     align-items: center;
+    justify-content: center;
 }
 
 .header-left .logo {
@@ -31,10 +34,9 @@ header {
     font-weight: bold;
 }
 
-.header-left .phone,
-.header-left .working-hours,
-.header-left .free-delivery {
-    margin: 0 15px;
+.header-left .info {
+    margin: 0 15px 0 150px;
+    justify-content: space-between;
 }
 
 .header-right {
@@ -48,11 +50,20 @@ header {
     border: none;
     padding: 10px 20px;
     cursor: pointer;
+    margin-right: 10px;
 }
 
-/* Основний контент */
-main {
-    padding: 0 20px 20px;
+#top-header {
+    position: fixed;
+    top: 0;
+    left: 0;
+    right: 0;
+    background-color: #1f1e1e;
+    color: white;
+    z-index: 1;
+    width: 100%;
+    height: 1em;
+    opacity: 0.9;
 }
 
 .num {
@@ -78,10 +89,10 @@ h1 {
 .description {
     flex: 1;
     text-align: left;
+    justify-content: center;
     padding-left: 10px;
     height: 60px;
 }
-
 
 .category {
     text-align: left;
@@ -91,63 +102,27 @@ h1 {
 
 .container-main {
     display: flex;
+    padding-top: 80px; 
 }
 
 .container {
+    background-color: rgba(255, 249, 232, 0.998);
     flex: 3;
     padding: 20px;
 }
 
-.order-summary {
-    flex: 1;
-    border: 1px solid #ccc;
-    padding: 10px;
-    margin-left: 20px;
-    max-width: 300px;
-}
-
-.order-summary h2 {
-    font-size: 18px;
-    color: #ff8c00;
-}
-
-.order-summary ul {
-    list-style: none;
-    padding: 0;
-}
-
-.order-summary ul li {
-    margin-bottom: 10px;
-}
-
-.total {
-    font-weight: bold;
-    margin-bottom: 10px;
-}
-
-.order-summary button {
-    background-color: #ff8c00;
-    color: white;
-    border: none;
-    padding: 10px 20px;
-    cursor: pointer;
-    width: 100%;
-}
-
-.summary-item {
-    border: 1px solid #ccc;
-    padding: 0;
-    text-align: left;
-}
-
-/* Кнопки категорій піци */
 .pizza-category-buttons {
-    display: flex;
     margin-bottom: 20px;
     justify-content: center;
     align-items: center;
+    display: flex;
+    flex-wrap: wrap;
+    gap: 10px;
 }
 
+.pizza-category-buttons div {
+    color: #ff8c00;
+}
 .pizza-category-buttons button {
     background-color: #ff8c00;
     color: #fff;
@@ -158,19 +133,18 @@ h1 {
     border-radius: 5px;
 }
 
-/* Список піц */
 .grid-container {
     display: grid;
-    grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+    grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
     grid-gap: 20px;
     padding: 20px;
 }
 
 .grid-weight {
     display: grid;
-    grid-template-columns: repeat(2, 1fr); /* Дві колонки */
-    grid-template-rows: repeat(2, 1fr); /* Два рядки */
-    gap: 10px; 
+    grid-template-columns: repeat(2, 1fr);
+    grid-template-rows: repeat(2, 1fr);
+    gap: 10px;
     text-align: center;
 }
 
@@ -187,21 +161,20 @@ h1 {
     margin-bottom: 20px;
 }
 
-
 .grid-price h1,
 .grid-price .grid-price-item {
-    margin: 5px 0; /* Задає відступи 2px зверху і знизу */
-    padding: 0; /* Забирає внутрішні відступи */
+    margin: 5px 0;
+    padding: 0;
     justify-content: center;
     align-items: center;
     display: flex;
 }
 
-
 .pizza-item {
     border: 1px solid #ccc;
     padding: 0;
     text-align: center;
+    background-color: white;
 }
 
 .pizza-item img {
@@ -229,8 +202,8 @@ h1 {
 
 .flex-container-summary {
     display: flex;
-    align-items: left;
-    justify-content: left;
+    flex: auto;
+    margin-bottom: 10px;
 }
 
 .flex-container img {
@@ -248,91 +221,227 @@ h1 {
     margin: auto;
 }
 
-.item {
+.badge {
+    position: absolute;
+    padding: 5px 10px;
+    color: #fff;
+    font-size: 14px;
+    font-weight: bold;
+    border-radius: 3px;
+}
+
+.badge.new {
+    background-color: #ff0000;
+}
+
+.badge.popular {
+    background-color: #28a745;
+}
+
+.flag-badge.high {
+    top: 0px;
+    clip-path: polygon(0% 0%, 100% 0%, 100% 100%, 50% 90%, 0% 100%);
+    height: 100px;
+    padding: 5px 10px;
+    position: absolute;
+}
+
+.flag-badge.low {
+    bottom: 0px;
+    clip-path: polygon(0% 0%, 50% 10%, 100% 0%, 100% 100%, 0% 100%);
+    height: 100px;
+    width: 80px;
+    padding: 5px 10px;
+    position: fixed;
+    margin-left: 20px;
+}
+
+.flag-badge {
+    opacity: 1;
+    left: 10px;
+    background-color: #ff8c00;
+    color: white;
+    font-weight: bold;
+    text-align: center;
+}
+
+aside {
+    background-color: #faf8f8;
+    width: 300px;
+    max-height: 130vh; 
+    position: sticky;
+    top: 0;
+    right: 0;
+    box-shadow: -2px 0 5px rgba(0, 0, 0, 0.1);
+    overflow-y: auto;
+    overflow-x: hidden;
+    z-index: 5;
+    display: flex;
+    flex-direction: column;
+    height: 100vh;
+    padding-top: 0;
+}
+
+#bought {
+    display: inline-block;
+    color: #333;
+    margin: 0;
+    background-color: white;
+    font-size: 19px;
+    margin-top: auto;
+    padding: 1em 0 1.4em 0.4em;
+}
+
+.clean {
+    margin-left: 5px;
+    color: #9a9999;
+    background-color: white;
+    padding: 0;
+    font-size: 11px;
+    width: 130px;
+}
+
+.top {
+    background-color: white;
+    height: 50px;
+}
+
+.order-list {
+    list-style-type: none;
+    padding: 0;
+    margin: 0;
+}
+
+.order-list li {
+    display: flex;
+    justify-content: space-between;
+    background-color: #faf8f8;
+    padding: 10px;
+    width: 100%;
+    max-width: 100%;
+    border-bottom: solid 0.7px #bdbcbc;
+}
+
+.order-list h3 {
+    color: #ff8c00;
+    background-color: #faf8f8;
+    padding-left: 0;
+    margin-top: auto;
+}
+
+.prop span {
+    margin-right: 10px;
+}
+
+.changing-elements {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    align-items: center;
+    gap: 5px;
+    margin-top: 0;
+}
+
+.plus,
+.minus,
+.delete {
+    border-radius: 50%;
+    width: 1.5em;
+    height: 1.5em;
+    display: inline-flex;
+    justify-content: center;
+    align-items: center;
+}
+
+.minus {
+    background-color: #e94322;
+    color: white;
+    font-size: 16px;
+    box-shadow: inset 0 0 5px rgb(239, 130, 130);
+    border: solid 0.5px #e52a2a;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.minus:hover {
+    background-color: #e52a2a;
+}
+
+.minus:active {
+    transform: scale(0.95);
+}
+
+.plus {
+    background-color: #4caf50;
+    color: white;
+    font-size: 16px;
+    box-shadow: inset 0 0 5px rgb(176, 243, 176);
+    border: solid 0.5px #58d147;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.plus:hover {
+    background-color: #58d147;
+}
+
+.plus:active {
+    transform: scale(0.95);
+}
+
+.delete {
+    background-color: white;
+    color: #ff8c00;
+    box-shadow: inset 0 0 5px rgb(224, 224, 224);
+    border: solid 0.5px #d9cfcf;
+    transition: background-color 0.3s ease, transform 0.2s ease;
+}
+
+.delete:hover {
+    background-color: #d9cfcf;
+}
+
+.delete:active {
+    transform: scale(0.95);
+}
+
+.order-total {
+    display: flex;
+    justify-content: space-between;
+    padding: 10px;
+    background-color: white;
+    position: absolute;
+    bottom: 0;
+    width: 100%;
+    box-shadow: 0 -1px 3px rgba(0, 0, 0, 0.1);
+}
+
+#sum {
+    font-size: 18px;
     display: flex;
     justify-content: space-between;
     align-items: center;
+    width: 100%;
 }
 
-.item-controls-change {
-    display: flex;
-    justify-content: center;
-    align-items: center;
-    flex: 3;
+#sum span {
+    margin: 0 10px;
 }
 
-.item-controls button {
+.order-total button {
+    background-color: #ff8c00;
+    color: white;
     border: none;
-    background-color: transparent;
-    font-size: 18px;
-    margin: 0 5px;
+    padding: 10px;
     cursor: pointer;
+    margin: 0;
+    width: 200px;
+    height: 50px;
+    margin-top: 10px;
+    border-radius: 0;
 }
 
-.item-controls-change button {
-    border: none;
-    background-color: transparent;
-    font-size: 18px;
-    margin: 0 5px;
-    cursor: pointer;
-}
-
-.item-controls-change .item-decrement {
-    color: #fff;
-    background-color: #dc3545;
-    border-bottom: 3px solid #ae2b38bc;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-}
-
-.item-controls-change .item-decrement:hover {
-    background-color: #dc35468d;
-    border-bottom: 3px solid #ae2b3883;
-} 
-
-.item-controls-change .item-increment {
-    color: #fff;
-    background-color: #28a745;
-    border-bottom: 3px solid #1d7431;
-    border-radius: 50%;
-    width: 35px;
-    height: 35px;
-    display: flex;
-    align-items: center;
-    justify-content: center;
-    font-size: 20px;
-}
-
-.item-controls-change .item-increment:hover {
-    background-color: #28a746a0;
-    border-bottom: 3px solid #1d74319d;
-} 
-
-
-.item-controls .item-delete {
-    padding: 5px 10px;
-    width: 35px;
-    height: 30px;
-    background-color: #dc3545;
-    color: #fff;
-    border-bottom: 3px solid #ae2b38bc;
-    border-radius: 5px;
-    cursor: pointer;
-}
-
-.item-controls .item-delete:hover {
-    background-color: #dc35468d;
-    border-bottom: 3px solid #ae2b3883;
-}
-
-.item-quantity,
-.item-quantity-notbought {
-    margin: 0 5px;
-    min-width: 15px;
-    text-align: center;
+.boughtPizza{
+    background-size: cover;
+    width: 120px;
+    height: 120px;
+    clip-path: polygon(0 0, 50% 0, 50% 100%, 0 100%);
 }
