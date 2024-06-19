@@ -232,7 +232,7 @@ function addPizzas(pizzas) {
             const gridBuy = document.createElement('div');
             gridBuy.classList.add('grid-buy');
 
-            pizza.prices.forEach(() => {
+            pizza.sizes.forEach((size, index) => {
                 const buyButton = document.createElement('button');
                 buyButton.textContent = 'Купити';
                 gridBuy.appendChild(buyButton);
@@ -275,7 +275,6 @@ function showAllPizzas() {
 document.addEventListener('DOMContentLoaded', () => {
     addPizzas(pizzas);
 
-    //Зробити кнопку активною
     function setActiveButton(button) {
         const buttons = document.querySelectorAll('.pizza-category-buttons button');
         buttons.forEach(btn => {
@@ -283,6 +282,16 @@ document.addEventListener('DOMContentLoaded', () => {
         });
         button.classList.add('active');
     }
+
+    document.querySelector('.grid-container').addEventListener('click', event => {
+        if (event.target.tagName === 'BUTTON' && event.target.textContent === 'Купити') {
+            const pizzaItem = event.target.closest('.pizza-item');
+            const pizzaName = pizzaItem.querySelector('h2').textContent;
+            const pizza = pizzas.find(p => p.name === pizzaName);
+            const sizeIndex = Array.from(event.target.parentNode.children).indexOf(event.target);
+            addToOrder(pizza, sizeIndex);
+        }
+    });
 
     const allButton = document.getElementById('filter-all');
 
@@ -317,4 +326,175 @@ document.addEventListener('DOMContentLoaded', () => {
         showAllPizzas();
         setActiveButton(allButton);
     });
+
+    document.querySelector('.clean').addEventListener('click', () => {
+        const orderList = document.querySelector('.order-list');
+        orderList.innerHTML = ''; // очищуємо список замовлень
+        const orderNum = document.querySelector('#bought .num');
+        orderNum.textContent = '0'; // скидаємо лічильник замовлень до нуля
+        const orderTotal = document.getElementById('sum');
+        orderTotal.textContent = 'Сума замовлення: 0 грн.'; // скидаємо суму замовлення до нуля
+    });
 });
+
+function addToOrder(pizza, sizeIndex) {
+    const orderList = document.querySelector('.order-list');
+    const orderTotal = document.getElementById('sum');
+    const orderNum = document.querySelector('#bought .num');
+    let num = parseInt(orderNum.textContent);
+    let sizeText='';
+    if(pizza.sizes.length === 1){
+        sizeText = 'Мала';
+        sizeIndex=0;
+    }else {
+        sizeText = sizeIndex === 0 ? 'Мала' : 'Велика';
+    }
+    const pizzaNameSize = `${pizza.name} (${sizeText})`;
+    
+    let existingItem = null;
+    
+    orderList.querySelectorAll('li').forEach(item => {
+        const name = item.querySelector('h3').textContent;
+        if (name === pizzaNameSize) {
+            existingItem = item;
+        }
+    });
+    
+    if (existingItem) {
+        const quantitySpan = existingItem.querySelector('.quantity');
+        let quantity = parseInt(quantitySpan.textContent);
+        quantity++;
+        quantitySpan.textContent = quantity;
+        changePrice(existingItem, pizza, sizeIndex, quantity);
+        changeNum(1);
+    } else {
+        const listItem = document.createElement('li');
+
+        const elementsDiv = document.createElement('div');
+        elementsDiv.classList.add('elements');
+
+        const name = document.createElement('h3');
+        name.textContent = pizzaNameSize;
+        elementsDiv.appendChild(name);
+
+        const propDiv = document.createElement('div');
+        propDiv.classList.add('prop');
+
+        const sizeImg = document.createElement('img');
+        sizeImg.src = 'images/size-icon.svg';
+        sizeImg.alt = '';
+        propDiv.appendChild(sizeImg);
+
+        const sizeSpan = document.createElement('span');
+        sizeSpan.textContent = pizza.sizes[sizeIndex];
+        propDiv.appendChild(sizeSpan);
+
+        const weightImg = document.createElement('img');
+        weightImg.src = 'images/weight.svg';
+        weightImg.alt = '';
+        propDiv.appendChild(weightImg);
+
+        const weightSpan = document.createElement('span');
+        weightSpan.textContent = pizza.weights[sizeIndex];
+        propDiv.appendChild(weightSpan);
+
+        elementsDiv.appendChild(propDiv);
+
+        const changingElementsDiv = document.createElement('div');
+        changingElementsDiv.classList.add('changing-elements');
+
+        const priceP = document.createElement('p');
+        priceP.textContent = `${pizza.prices[sizeIndex]} грн`;
+        changingElementsDiv.appendChild(priceP);
+
+        const changeDiv = document.createElement('div');
+        changeDiv.classList.add('change');
+
+        const minusButton = document.createElement('button');
+        minusButton.classList.add('minus');
+        minusButton.textContent = '-';
+        minusButton.addEventListener('click', () => {
+            const quantitySpan = listItem.querySelector('.quantity');
+            let quantity = parseInt(quantitySpan.textContent);
+            if (quantity > 1) {
+                quantity--;
+                quantitySpan.textContent = quantity;
+                changePrice(listItem, pizza, sizeIndex, quantity);
+                changeNum(-1);
+            }
+        });
+        changeDiv.appendChild(minusButton);
+
+        const quantitySpan = document.createElement('span');
+        quantitySpan.classList.add('quantity');
+        quantitySpan.textContent = '1';
+        changeDiv.appendChild(quantitySpan);
+
+        const plusButton = document.createElement('button');
+        plusButton.classList.add('plus');
+        plusButton.textContent = '+';
+        plusButton.addEventListener('click', () => {
+            const quantitySpan = listItem.querySelector('.quantity');
+            let quantity = parseInt(quantitySpan.textContent);
+            quantity++;
+            quantitySpan.textContent = quantity;
+            changePrice(listItem, pizza, sizeIndex, quantity);
+            changeNum(1);
+        });
+        changeDiv.appendChild(plusButton);
+
+        changingElementsDiv.appendChild(changeDiv);
+
+        const deleteButton = document.createElement('button');
+        deleteButton.classList.add('delete');
+        deleteButton.textContent = 'x';
+        deleteButton.addEventListener('click', () => {
+            let quantity = parseInt(quantitySpan.textContent);
+            listItem.remove();
+            changeNum(-quantity);
+        });
+        changingElementsDiv.appendChild(deleteButton);
+
+        elementsDiv.appendChild(changingElementsDiv);
+
+        const img = document.createElement('img');
+        img.classList.add('boughtPizza');
+        img.src = pizza.image;
+        img.alt = pizza.name;
+
+        listItem.appendChild(elementsDiv);
+        listItem.appendChild(img);
+
+        orderList.appendChild(listItem);
+
+        changeNum(1);
+    }
+}
+
+function changePrice(item, pizza, sizeIndex, quantity){
+    const priceP = item.querySelector('.changing-elements p');
+    const newPrice = pizza.prices[sizeIndex] * quantity;
+    priceP.textContent = `${newPrice} грн`;
+}
+
+function changeNum(delta){
+    const orderNum = document.querySelector('#bought .num');
+    let num = parseInt(orderNum.textContent);
+    num+=delta;
+    orderNum.textContent = num;
+    updateOrderTotal();
+}
+
+function updateOrderTotal() {
+    const orderList = document.querySelector('.order-list');
+    const orderTotal = document.getElementById('sum');
+    let total = 0;
+
+    orderList.querySelectorAll('li').forEach(item => {
+        const price = parseInt(item.querySelector('.changing-elements p').textContent);
+        const quantity = parseInt(item.querySelector('.quantity').textContent);
+        total += price;
+    });
+
+    orderTotal.textContent = `Сума замовлення: ${total} грн.`;
+}
