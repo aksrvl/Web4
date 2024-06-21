@@ -109,14 +109,14 @@ function addPizzas(pizzas) {
 
         if (pizza.badge) {
             const badge = document.createElement('div');
-            badge.classList.add('badge'); 
-        
+            badge.classList.add('badge');
+
             if (pizza.badge === 'Нова') {
                 badge.classList.add('new');
             } else if (pizza.badge === 'Популярна') {
                 badge.classList.add('popular');
             }
-        
+
             badge.textContent = pizza.badge;
             pizzaItem.appendChild(badge);
         }
@@ -274,6 +274,7 @@ function showAllPizzas() {
 
 document.addEventListener('DOMContentLoaded', () => {
     addPizzas(pizzas);
+    loadOrderFromLocalStorage();
 
     function setActiveButton(button) {
         const buttons = document.querySelectorAll('.pizza-category-buttons button');
@@ -329,37 +330,71 @@ document.addEventListener('DOMContentLoaded', () => {
 
     document.querySelector('.clean').addEventListener('click', () => {
         const orderList = document.querySelector('.order-list');
-        orderList.innerHTML = ''; // очищуємо список замовлень
+        orderList.innerHTML = '';
         const orderNum = document.querySelector('#bought .num');
-        orderNum.textContent = '0'; // скидаємо лічильник замовлень до нуля
+        orderNum.textContent = '0'; 
         const orderTotal = document.getElementById('sum');
-        orderTotal.textContent = 'Сума замовлення: 0 грн.'; // скидаємо суму замовлення до нуля
+        orderTotal.textContent = 'Сума замовлення: 0 грн.';
+        localStorage.removeItem('order');
+    });
+
+    document.querySelector('.login-button').addEventListener('click', () => {
+        window.location.href = 'bonus.html';
     });
 });
+
+function saveOrderToLocalStorage() {
+    const orderList = document.querySelector('.order-list');
+    const orderItems = [];
+
+    orderList.querySelectorAll('li').forEach(item => {
+        const name = item.querySelector('h3').textContent;
+        const size = item.querySelector('.prop span').textContent;
+        const quantity = item.querySelector('.quantity').textContent;
+        orderItems.push({ name, size, quantity });
+    });
+
+    localStorage.setItem('order', JSON.stringify(orderItems));
+}
+
+function loadOrderFromLocalStorage() {
+    const orderItems = JSON.parse(localStorage.getItem('order'));
+    if (orderItems) {
+        orderItems.forEach(item => {
+            const pizza = pizzas.find(p => p.name + ' (' + (item.size === '30' ? 'Мала' : 'Велика') + ')' === item.name);
+            const sizeIndex = pizza.sizes.indexOf(parseInt(item.size));
+            const quantity = parseInt(item.quantity);
+
+            for (let i = 0; i < quantity; i++) {
+                addToOrder(pizza, sizeIndex);
+            }
+        });
+    }
+}
 
 function addToOrder(pizza, sizeIndex) {
     const orderList = document.querySelector('.order-list');
     const orderTotal = document.getElementById('sum');
     const orderNum = document.querySelector('#bought .num');
     let num = parseInt(orderNum.textContent);
-    let sizeText='';
-    if(pizza.sizes.length === 1){
+    let sizeText = '';
+    if (pizza.sizes.length === 1) {
         sizeText = 'Мала';
-        sizeIndex=0;
-    }else {
+        sizeIndex = 0;
+    } else {
         sizeText = sizeIndex === 0 ? 'Мала' : 'Велика';
     }
     const pizzaNameSize = `${pizza.name} (${sizeText})`;
-    
+
     let existingItem = null;
-    
+
     orderList.querySelectorAll('li').forEach(item => {
         const name = item.querySelector('h3').textContent;
         if (name === pizzaNameSize) {
             existingItem = item;
         }
     });
-    
+
     if (existingItem) {
         const quantitySpan = existingItem.querySelector('.quantity');
         let quantity = parseInt(quantitySpan.textContent);
@@ -452,6 +487,7 @@ function addToOrder(pizza, sizeIndex) {
             let quantity = parseInt(quantitySpan.textContent);
             listItem.remove();
             changeNum(-quantity);
+            saveOrderToLocalStorage();
         });
         changingElementsDiv.appendChild(deleteButton);
 
@@ -471,18 +507,19 @@ function addToOrder(pizza, sizeIndex) {
     }
 }
 
-function changePrice(item, pizza, sizeIndex, quantity){
+function changePrice(item, pizza, sizeIndex, quantity) {
     const priceP = item.querySelector('.changing-elements p');
     const newPrice = pizza.prices[sizeIndex] * quantity;
     priceP.textContent = `${newPrice} грн`;
 }
 
-function changeNum(delta){
+function changeNum(delta) {
     const orderNum = document.querySelector('#bought .num');
     let num = parseInt(orderNum.textContent);
-    num+=delta;
+    num += delta;
     orderNum.textContent = num;
     updateOrderTotal();
+    saveOrderToLocalStorage();
 }
 
 function updateOrderTotal() {
@@ -497,4 +534,5 @@ function updateOrderTotal() {
     });
 
     orderTotal.textContent = `Сума замовлення: ${total} грн.`;
+    saveOrderToLocalStorage();
 }
